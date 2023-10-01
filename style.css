@@ -1,0 +1,130 @@
+* {
+	margin: 0%;
+	padding: 0%;
+}
+
+body {
+	margin: 15px;
+	/*width: 80%;
+	margin: 0 auto;
+	max-width: 500px;*/
+	background: linear-gradient(to top, #ffffff, #f3f3f3); 
+	color: #444444;
+	text-align: center;
+	line-height: 1.7;
+	font-family: "Yu Gothic Medium", "游ゴシック Medium", "Yu Gothic",
+					"游ゴシック", YuGothic, "ヒラギノ角ゴ Pro W3",
+					"Hiragino Kaku Gothic Pro", "メイリオ", "Meiryo";
+	overflow: auto;
+    background-repeat: no-repeat;
+}
+
+hr {
+    border: none;
+    background-color: rgba(red, green, blue, 0);
+    height: 28px;
+}
+
+h1 {
+	margin: 0px;
+	padding: 5px;
+	color: #5a5a5a;
+	display: inline-block;
+	position: relative;
+	overflow: hidden;
+	transition: 0.2s;
+}
+
+button {
+    -webkit-user-select: none;
+    user-select: none;
+    margin: 0 6px 10px;
+    padding: 7px 12px;
+    border: none;
+    display: inline-block;
+    font-size: 114%;
+    line-height: 1;
+    color: #fff;
+    font-size: 12px;
+    position: relative;
+    cursor: pointer;
+}
+
+.blueBtn {
+    background-color: #27acd9;
+    box-shadow: 0 6px #1987ac;
+    border-radius: 15px;
+    top: 0;
+    transition: .2s all;
+    color: #fff;
+	margin-top: 15px;
+	margin-bottom: 15px;
+}
+
+.blueBtn:hover {
+    border-radius: 15px;
+    box-shadow: 0 6px #1987ac;
+    top: 0;
+    transition: .2s all;
+    opacity: .8;
+}
+
+.blueBtn:active {
+    box-shadow: 0 1px #1987ac;
+    top: 5px;
+}
+
+#kosenjohBlock {
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+
+form {
+	margin-top: 26px;
+	margin-bottom: 26px;
+	align-items: flex-end;
+}
+
+select {
+	width: 110px;
+	font-size: 15px;
+	font-weight: bold;
+	color: #6a6a6a;
+	cursor: pointer;
+	margin-right: 3px;
+	margin-left: 3px;
+	padding: 3.5px 0 2.5px 0;
+	background-color: transparent;
+}
+
+option {
+	background-color: linear-gradient(transparent,transparent);
+}
+
+input[type="number"] {
+	box-sizing: border-box;
+	width: 8rem;
+	letter-spacing: 1px;
+	padding-left: 5px;
+}
+
+input[type="number"] :focus {
+	outline: none;
+}
+
+input[type="number"]:invalid {
+	background-color: #ffe3e3;
+}
+
+.inputArea {
+	padding: 5px 0;
+	margin: 0 4px 0 4px;
+	border: 0;
+	border-bottom: 1px solid #1b2538;
+	background-color: transparent;
+}
+
+.resultArea {
+	padding-left: 12px;
+	width: 11rem;
+}
