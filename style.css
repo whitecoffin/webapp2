@@ -128,3 +128,110 @@ input[type="number"]:invalid {
 	padding-left: 12px;
 	width: 11rem;
 }
+
+
+.displayFlexArea {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.displayFlexArea > div {
+	margin:  17px 20px;
+}
+
+.dfArea2 > div {
+	margin-top: 10px;
+}
+
+input[type=range] {
+	-webkit-appearance: none;
+	-webkit-flex-basis: 100%;
+	-webkit-tap-highlight-color: transparent;
+	background: transparent;
+}
+
+input[type=range]::-webkit-slider-runnable-track {
+    width: 10rem;
+    height: 1rem;
+    background: transparent;
+    border: 2px solid #f36f21;
+    border-radius: 10px;
+}
+
+input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 1.5rem;
+    width: 1.5rem;
+    border-radius: 50%;
+    background: #f36f21;
+    margin-top: -0.4rem;
+    border: 2px solid #fff;
+    cursor: pointer;
+    box-shadow: 0px 5px 5px -3px #d9d9d9;
+}
+
+input[type=range]:focus {
+    outline: none;
+}
+
+.range-container {
+	width: 170px;
+	display: -webkit-flex;
+	-webkit-flex-wrap: wrap;
+	margin-top: 2rem;
+}
+
+.label-container {
+	-webkit-flex-basis: 100%;
+	display: -webkit-flex;
+	-webkit-flex-wrap: nowrap;
+	-webkit-justify-content: space-between;
+	margin-top: 20px;
+}
+
+.label {
+	color: grey;
+	font-size: 1rem;
+	text-align: center;
+	max-width: 3rem;
+	-webkit-tap-highlight-color: transparent;  /*gets rid of black flash on click of track*/
+}
+
+.fixedPositionLabel1 {
+	margin-left: 9px;
+}
+
+.fixedPositionLabel25 {
+	margin-left: 8px;
+}
+
+.fixedPositionLabel50 {
+	margin-left: 5px;
+}
+
+.fixedPositionLabel75 {
+	margin-left: 4.5px;
+}
+
+.slider-container {
+	position: relative;
+	height: 100%;
+	width: 100%;
+}
+.slider {
+	position: absolute;
+	left:0;
+	width: 100%;
+}
+
+.range-fill {
+	position:absolute;
+	top:4px;
+	left:4px;
+	background-color: #fbcdb2;
+	height: 12px;
+	pointer-events: none;
+	border-radius: 10px;
+}
+
