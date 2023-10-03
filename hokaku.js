@@ -24,7 +24,8 @@ function calcCatchRate() {
     // HP = (種族値×2+個体値+努力値÷4)×レベル÷100+レベル+10
     // 種族値は配列の2次元目の4番にあるが、まずは1次元目でPK-1をしてインデックスを指定する
     var hiddenHpValue = Number(pokemonArray[pokemonNumber - 1][3]);
-    var maxHp = Math.ceil((hiddenHpValue * 2 + 31 + 0 / 4) * pokemonLevel / 100) + pokemonLevel + 10;
+    var maxHp = Math.floor((hiddenHpValue * 2 + 31 + 0 / 4) * pokemonLevel / 100) + pokemonLevel + 10;
+    console.log(maxHp);
     // A = (最大HP×3－現在HP×2)×4096×捕捉率×捕獲補正率(モンボ想定で1)
     // 捕捉率は種族値と同じように配列から取ってくる
     var variableA = (maxHp * 3 - currentHp * 2) * 4096 * Number(pokemonArray[pokemonNumber - 1][2]) * 1;
