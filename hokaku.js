@@ -1,13 +1,9 @@
-// HPがVの個体がレベル100の時のHP実数値
-const level100Hp = [301];
-// ポケモン毎に設定された捕捉率
-const hiddenCatchRate = [6];
 // バッジ数に応じたペナルティの閾値一覧
 const penaltyThreshold = [25, 30, 35, 40, 45, 50, 55, 60, 100];
 
 // 計算処理
 function calcCatchRate() {
-    // ポケモンの図鑑番号を取得
+    // ポケモンの番号(配列のPK)を取得
     var pokemonNumber = Number(document.getElementById("pokemon").value);
     // ポケモンのレベルを取得
     var pokemonLevel = Number(document.getElementById("level").value);
@@ -24,14 +20,14 @@ function calcCatchRate() {
     // 図鑑のポケモン数を取得
     var pokedex = Number(document.getElementById("pokedex").value);
 
-    // 変数Aの値を計算
     // ポケモンの最大HPを求める
-    // レベル100時の実数値を1/100にし、そこにレベルをかけることでおおよその値を求める
-    var maxHp = Number(level100Hp[pokemonNumber - 1]) / 100 * pokemonLevel;
-    // 小数点切り上げ
-    var maxHp = Math.ceil(maxHp);
+    // HP = (種族値×2+個体値+努力値÷4)×レベル÷100+レベル+10
+    // 種族値は配列の2次元目の4番にあるが、まずは1次元目でPK-1をしてインデックスを指定する
+    var hiddenHpValue = Number(pokemonArray[pokemonNumber - 1][3]);
+    var maxHp = Math.ceil((hiddenHpValue * 2 + 31 + 0 / 4) * pokemonLevel / 100) + pokemonLevel + 10;
     // A = (最大HP×3－現在HP×2)×4096×捕捉率×捕獲補正率(モンボ想定で1)
-    var variableA = (maxHp * 3 - currentHp * 2) * 4096 * Number(hiddenCatchRate[pokemonNumber - 1]) * 1;
+    // 捕捉率は種族値と同じように配列から取ってくる
+    var variableA = (maxHp * 3 - currentHp * 2) * 4096 * Number(pokemonArray[pokemonNumber - 1][2]) * 1;
     // ペナルティ閾値オーバーの数をカウントする変数
     var penaltyThresholdExceededCounter = 0;
     // ペナルティ無しの上限レベルよりもポケモンのレベルが高い場合
@@ -177,11 +173,23 @@ function SelectCalcCatchRate() {
     childDiv1.appendChild(label1);
     var selectPokemonName = document.createElement("select");
     selectPokemonName.setAttribute("id", "pokemon");
+    selectPokemonName.setAttribute("class", "pokemonSelect");
     childDiv1.appendChild(selectPokemonName);
-    var optionPokeName1 = document.createElement("option");
-    optionPokeName1.text = "パオジアン";
-    optionPokeName1.setAttribute("value", 1);
-    selectPokemonName.appendChild(optionPokeName1);
+    // ポケモンの数ぶんループ
+    pokemonArray.forEach(function(aryValue,aryIndex) {
+        var optionPokemonSelect = document.createElement("option");
+        optionPokemonSelect.text = aryValue[1];
+        optionPokemonSelect.setAttribute("value", aryValue[0]);
+        selectPokemonName.appendChild(optionPokemonSelect);
+    });
+
+    // セレクトボックスに検索機能を付与する
+    $(selectPokemonName).select2({
+        language: "ja",
+        width: 'auto',
+        dropdownAutoWidth: true,
+    });
+  
 
     // 1つ1つの要素を分けるdiv
     var childDiv2 = document.createElement("div");
@@ -197,7 +205,7 @@ function SelectCalcCatchRate() {
     pokeLevelInput.setAttribute("name", "level");
     pokeLevelInput.setAttribute("min", 1);
     pokeLevelInput.setAttribute("max", 100);
-    pokeLevelInput.setAttribute("value", 60);
+    pokeLevelInput.setAttribute("value", 50);
     pokeLevelInput.required = true;
     childDiv2.appendChild(pokeLevelInput);
 
