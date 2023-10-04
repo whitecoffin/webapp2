@@ -25,7 +25,6 @@ function calcCatchRate() {
     // 種族値は配列の2次元目の4番にあるが、まずは1次元目でPK-1をしてインデックスを指定する
     var hiddenHpValue = Number(pokemonArray[pokemonNumber - 1][3]);
     var maxHp = Math.floor((hiddenHpValue * 2 + 31 + 0 / 4) * pokemonLevel / 100) + pokemonLevel + 10;
-    console.log(maxHp);
     // A = (最大HP×3－現在HP×2)×4096×捕捉率×捕獲補正率(モンボ想定で1)
     // 捕捉率は種族値と同じように配列から取ってくる
     var variableA = (maxHp * 3 - currentHp * 2) * 4096 * Number(pokemonArray[pokemonNumber - 1][2]) * 1;
@@ -91,38 +90,20 @@ function calcCatchRate() {
     var variableD = variableC * additionalEffect * surpriseCorrection;
     // 四捨五入
     variableD = Math.round(variableD);
-    // 1044480より大きい場合は1044480とする
-    if (variableD > 1044480) {
-        variableD = 1044480;
-    }
 
-    // 最終的な捕獲率を入れる用の変数
+    // 最終的な捕獲率を入れる変数
     var resultCatchRate = 0;
-    resultCatchRate = variableD;
+    // 捕獲成功フラグ(これが立っていると後続の計算をスキップする)
+    var isConsecutive = false;
 
-    // このままでは桁が大きすぎるので、従来の倍率に近づける
-    // 倍率をかけた後に2048を足し、4096で割り、小数点後を切り捨てる
-    resultCatchRate = resultCatchRate + 2048;
-    resultCatchRate = Math.floor(resultCatchRate / 4096);
-
-    // 結果を画面に表示
-    var calcCatchRateBlock = document.getElementById("selectAndGen");
-    var inputResultCatchRate = document.getElementById("resultCatchRate");
-    // まだ結果表示用タグが画面にない場合
-    if (typeof inputResultCatchRate === 'undefined' || inputResultCatchRate == null) {
-        // 結果表示用のinput属性を作り、親子関係をセットする
-        var inputResultCatchRate = document.createElement("input");
-        inputResultCatchRate.setAttribute("type", "text");
-        inputResultCatchRate.setAttribute("id", "resultCatchRate");
-        inputResultCatchRate.setAttribute("name", "resultCatchRate");
-        inputResultCatchRate.setAttribute("value", "捕獲率は" + resultCatchRate + "%！");
-        inputResultCatchRate.readOnly = true;
-        calcCatchRateBlock.appendChild(inputResultCatchRate);
-    } else {
-        inputResultCatchRate.setAttribute("value", "捕獲率は" + resultCatchRate + "%！");
+    // Dが1044480より大きい場合は1044480とし、捕獲率を100にする
+    if (variableD >= 1044480) {
+        variableD = 1044480;
+        resultCatchRate = 100;
+        isConsecutive = true;
     }
 
-    /*
+    // クリティカル率を求める
     // E = 715827883×つかまえたかず倍率×D÷(4294967296×4096)
     // 図鑑がどれだけ埋まっているかに応じて倍率を設定
     var pokedexCorrection = 1;
@@ -140,7 +121,114 @@ function calcCatchRate() {
         pokedexCorrection = 2.5;
     }
     // Eを求める
-    var variableE = 715827883 * pokedexCorrection * variableD / (4294967296 * 4096);
+    var variableE = Math.floor(715827883 * pokedexCorrection * variableD / (4294967296 * 4096));
+    console.log(variableE);
+    // クリティカル率を求める
+    var criticalRate = variableE / 256;
+    console.log(criticalRate);
+    // 100をかけて小数をなくし、四捨五入する
+    criticalRate = Math.round(criticalRate * 100);
+    console.log(criticalRate);
+
+    // この計算は前々項でスキップフラグが立っていない場合のみ行う
+    if (!isConsecutive) {
+        // 最終的な捕獲率を求める
+        // G ≒ 65536÷(1044480/D)の0.1875乗
+        var variableG = Math.floor(65536 / (1044480 / variableD) ** 0.1875);
+
+        // 1揺れ判定あたりの成功率を求める(これはクリティカルの場合の捕獲率でもある)
+        var singleSuccessRate = variableG / 65536;
+        // 最終的な捕獲率を求める(4回揺れ判定がある場合)
+        resultCatchRate = singleSuccessRate ** 4;
+        // 最後に100をかけて小数をなくし、四捨五入する
+        resultCatchRate = Math.round(resultCatchRate * 100);
+        // クリティカルの場合の捕獲率も同様に小数をなくし、四捨五入する
+        singleSuccessRate = Math.round(singleSuccessRate * 100);
+    }
+
+    // 結果を画面に表示
+    // モーダルウィンドウを取得
+    var resultModalWindow = document.getElementById("resultModalWindow");
+    // モーダルのタイトルを取得
+    var modalTitle = document.getElementById("modalTitle");
+    // モーダルの本文を取得
+    var resultModalContent = document.getElementById("resultModalContent");
+    // 2回目以降は子要素を削除してから追加する必要がある
+    // 子要素がある限り、一番目の子要素を削除
+    while(resultModalContent.firstChild){
+        resultModalContent.removeChild(resultModalContent.firstChild);
+    }
+
+    //  Dで捕獲率100となっていた場合
+    if (isConsecutive) {
+        // モーダルのタイトルを変更
+        modalTitle.textContent = "計算結果";
+        // モーダルの本文を変更
+        var resultContext1 = document.createElement("p");
+        resultContext1.textContent = "捕獲率はなんと" + resultCatchRate + "%！";
+        var resultContext2 = document.createElement("p");
+        resultContext2.textContent = "捕獲クリティカルの演出が起こる可能性は" + criticalRate + "%！";
+        resultModalContent.appendChild(resultContext1);
+        resultModalContent.appendChild(resultContext2);
+    } else {
+        // それ以外のパターン(ほぼこっち)
+        // モーダルのタイトルを変更
+        modalTitle.textContent = "計算結果";
+        // モーダルの本文を変更
+        var resultContext1 = document.createElement("p");
+        resultContext1.textContent = "捕獲率は" + resultCatchRate + "%！";
+        var resultContext2 = document.createElement("p");
+        resultContext2.textContent = "捕獲クリティカルが起こる可能性は" + criticalRate + "%！";
+        var resultContext3 = document.createElement("p");
+        resultContext3.textContent = "クリティカル発生時の捕獲率は" + singleSuccessRate + "%！";
+        var resultContext4 = document.createElement("p");
+        resultContext4.textContent = "※クリティカルが発生しても捕獲判定自体は行われます。";
+        resultContext4.setAttribute("class", "smallResultContext smallResultContextTop");
+        var resultContext5 = document.createElement("p");
+        resultContext5.textContent = "もし失敗した場合はクリティカルの演出もありません。";
+        resultContext5.setAttribute("class", "smallResultContext");
+        resultModalContent.appendChild(resultContext1);
+        resultModalContent.appendChild(resultContext2);
+        resultModalContent.appendChild(resultContext3);
+        resultModalContent.appendChild(resultContext4);
+        resultModalContent.appendChild(resultContext5);
+    }
+
+    // モーダルの設定
+    MicroModal.init({
+        disableScroll: true,
+        awaitCloseAnimation: true,
+        awaitOpenAnimation: true
+    });
+    // モーダルウィンドウを表示
+    MicroModal.show('resultModalWindow');
+
+
+    /*
+    // 結果を画面に表示
+    var calcCatchRateBlock = document.getElementById("selectAndGen");
+    var inputResultCatchRate = document.getElementById("resultCatchRate");
+    // まだ結果表示用タグが画面にない場合
+    if (typeof inputResultCatchRate === 'undefined' || inputResultCatchRate == null) {
+        // 結果表示用のinput属性を作り、親子関係をセットする
+        var inputResultCatchRate = document.createElement("input");
+        inputResultCatchRate.setAttribute("type", "text");
+        inputResultCatchRate.setAttribute("id", "resultCatchRate");
+        inputResultCatchRate.setAttribute("name", "resultCatchRate");
+        inputResultCatchRate.setAttribute("value", "捕獲率は" + resultCatchRate + "%！");
+        inputResultCatchRate.readOnly = true;
+        calcCatchRateBlock.appendChild(inputResultCatchRate);
+    } else {
+        inputResultCatchRate.setAttribute("value", "捕獲率は" + resultCatchRate + "%！");
+    }
+    */
+
+        
+    /* 名残を残しているだけ
+    // このままでは桁が大きすぎるので、従来の倍率に近づける
+    // 倍率をかけた後に2048を足し、4096で割り、小数点後を切り捨てる
+    resultCatchRate = resultCatchRate + 2048;
+    resultCatchRate = Math.floor(resultCatchRate / 4096);
     */
 }
 

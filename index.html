@@ -17,12 +17,31 @@
     <br>
     <hr>
     <div id="selectAndGen"></div>
+    <main class="container">
+        <div class="modal modalWindow" id="resultModalWindow" aria-hidden="true">
+            <div class="modalOverlay" id="resultModalOverlay" tabindex="-1" data-micromodal-close>
+                <div class="modalDialog" id="resultModalDialog" role="dialog" aria-modal="true" aria-labelledby="modal-1-title">
+                    <header class="modalHeader">
+                        <h2 class="modalTitle" id="modalTitle">タイトル</h2>
+                        <button class="closeResultModal" id="resultModalCloseBtn" aria-label="closeResultModal"data-micromodal-close></button>
+                    </header>
+                    <main class="modalContent" id="resultModalContent">
+                    </main>
+                    <footer class="modalFooter">
+                        <button class="modalOKBtn modalOKBtnPrimary" data-micromodal-close aria-label="CloseThisDialogWindow">閉じる</button>
+                    </footer>
+                </div>
+            </div>
+        </div>
+    </main>
 </body>
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script src="select2.min.js"></script>
 <script src="ja.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/micromodal/dist/micromodal.min.js"></script>
 <script src="pokeArray.js"></script>
 <script src="kosenjoh.js"></script>
 <script src="hokaku.js"></script>
+
 </html>
