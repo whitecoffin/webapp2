@@ -491,8 +491,8 @@ function SelectCalcCatchRate() {
     pokedexInput.setAttribute("id", "pokedex");
     pokedexInput.setAttribute("name", "pokedex");
     pokedexInput.setAttribute("min", 0);
-    pokedexInput.setAttribute("max", 400);
-    pokedexInput.setAttribute("value", 400);
+    pokedexInput.setAttribute("max", 496);
+    pokedexInput.setAttribute("value", 496);
     pokedexInput.required = true;
     childDiv8.appendChild(pokedexInput);
 
