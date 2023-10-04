@@ -33,7 +33,7 @@ function calcCatchRate() {
     // ペナルティ無しの上限レベルよりもポケモンのレベルが高い場合
     if (pokemonLevel > earnedBadges) {
         // ポケモンのレベルと閾値を比較して、超えるか等しい時にループを抜ける
-        for(counterI = 0; pokemonLevel <= penaltyThreshold[counterI]; counterI++) {
+        for (counterI = 0; pokemonLevel <= penaltyThreshold[counterI]; counterI++) {
             // 現在のバッジ数に応じた閾値と、配列の閾値を比較し、バッジが足りていない時はインクリメント
             if (earnedBadges < penaltyThreshold[counterI]) {
                 penaltyThresholdExceededCounter++;
@@ -66,7 +66,7 @@ function calcCatchRate() {
     // 状態異常補正はどく・まひ・やけどなら1.5、ねむり・こおりなら2.5となる
     // また、計算後は四捨五入を行う
     var variableC = 0;
-    switch(disease) {
+    switch (disease) {
         case 'nope':
             variableC = variableB;
             break;
@@ -122,13 +122,11 @@ function calcCatchRate() {
     }
     // Eを求める
     var variableE = Math.floor(715827883 * pokedexCorrection * variableD / (4294967296 * 4096));
-    console.log(variableE);
     // クリティカル率を求める
     var criticalRate = variableE / 256;
-    console.log(criticalRate);
-    // 100をかけて小数をなくし、四捨五入する
-    criticalRate = Math.round(criticalRate * 100);
-    console.log(criticalRate);
+    // 1000をかけて四捨五入し10で割ることで、小数点第1位まで残す
+    criticalRate = Math.round(criticalRate * 1000) / 10;
+
 
     // この計算は前々項でスキップフラグが立っていない場合のみ行う
     if (!isConsecutive) {
@@ -141,9 +139,9 @@ function calcCatchRate() {
         // 最終的な捕獲率を求める(4回揺れ判定がある場合)
         resultCatchRate = singleSuccessRate ** 4;
         // 最後に100をかけて小数をなくし、四捨五入する
-        resultCatchRate = Math.round(resultCatchRate * 100);
+        resultCatchRate = Math.round(resultCatchRate * 1000) / 10;
         // クリティカルの場合の捕獲率も同様に小数をなくし、四捨五入する
-        singleSuccessRate = Math.round(singleSuccessRate * 100);
+        singleSuccessRate = Math.round(singleSuccessRate * 1000) / 10;
     }
 
     // 結果を画面に表示
@@ -155,7 +153,7 @@ function calcCatchRate() {
     var resultModalContent = document.getElementById("resultModalContent");
     // 2回目以降は子要素を削除してから追加する必要がある
     // 子要素がある限り、一番目の子要素を削除
-    while(resultModalContent.firstChild){
+    while (resultModalContent.firstChild) {
         resultModalContent.removeChild(resultModalContent.firstChild);
     }
 
@@ -202,34 +200,6 @@ function calcCatchRate() {
     });
     // モーダルウィンドウを表示
     MicroModal.show('resultModalWindow');
-
-
-    /*
-    // 結果を画面に表示
-    var calcCatchRateBlock = document.getElementById("selectAndGen");
-    var inputResultCatchRate = document.getElementById("resultCatchRate");
-    // まだ結果表示用タグが画面にない場合
-    if (typeof inputResultCatchRate === 'undefined' || inputResultCatchRate == null) {
-        // 結果表示用のinput属性を作り、親子関係をセットする
-        var inputResultCatchRate = document.createElement("input");
-        inputResultCatchRate.setAttribute("type", "text");
-        inputResultCatchRate.setAttribute("id", "resultCatchRate");
-        inputResultCatchRate.setAttribute("name", "resultCatchRate");
-        inputResultCatchRate.setAttribute("value", "捕獲率は" + resultCatchRate + "%！");
-        inputResultCatchRate.readOnly = true;
-        calcCatchRateBlock.appendChild(inputResultCatchRate);
-    } else {
-        inputResultCatchRate.setAttribute("value", "捕獲率は" + resultCatchRate + "%！");
-    }
-    */
-
-        
-    /* 名残を残しているだけ
-    // このままでは桁が大きすぎるので、従来の倍率に近づける
-    // 倍率をかけた後に2048を足し、4096で割り、小数点後を切り捨てる
-    resultCatchRate = resultCatchRate + 2048;
-    resultCatchRate = Math.floor(resultCatchRate / 4096);
-    */
 }
 
 // // タブが選択された際の処理
@@ -238,13 +208,13 @@ function SelectCalcCatchRate() {
     var selectAndGenCalcCatchRate = document.getElementById("selectAndGen");
     // 2回目以降は子要素を削除してから追加する必要がある
     // 子要素がある限り、一番目の子要素を削除
-    while(selectAndGenCalcCatchRate.firstChild){
+    while (selectAndGenCalcCatchRate.firstChild) {
         selectAndGenCalcCatchRate.removeChild(selectAndGenCalcCatchRate.firstChild);
     }
 
     // 部品をどんどん生成していく
     // 親の親　先祖様
-    var form  = document.createElement("form");
+    var form = document.createElement("form");
     selectAndGenCalcCatchRate.appendChild(form);
 
     // 横並び用div
@@ -259,13 +229,14 @@ function SelectCalcCatchRate() {
     // ポケモン名
     var label1 = document.createElement("label");
     label1.textContent = "ポケモンを選んでね";
+    label1.setAttribute("class", "fixedPositionLabels");
     childDiv1.appendChild(label1);
     var selectPokemonName = document.createElement("select");
     selectPokemonName.setAttribute("id", "pokemon");
     selectPokemonName.setAttribute("class", "pokemonSelect");
     childDiv1.appendChild(selectPokemonName);
     // ポケモンの数ぶんループ
-    pokemonArray.forEach(function(aryValue,aryIndex) {
+    pokemonArray.forEach(function (aryValue, aryIndex) {
         var optionPokemonSelect = document.createElement("option");
         optionPokemonSelect.text = aryValue[1];
         optionPokemonSelect.setAttribute("value", aryValue[0]);
@@ -278,7 +249,7 @@ function SelectCalcCatchRate() {
         width: 'auto',
         dropdownAutoWidth: true,
     });
-  
+
 
     // 1つ1つの要素を分けるdiv
     var childDiv2 = document.createElement("div");
@@ -287,9 +258,11 @@ function SelectCalcCatchRate() {
     // レベル
     var label2 = document.createElement("label");
     label2.textContent = "レベル";
+    label2.setAttribute("class", "fixedPositionLabels");
     childDiv2.appendChild(label2);
     var pokeLevelInput = document.createElement("input");
     pokeLevelInput.setAttribute("type", "number");
+    pokeLevelInput.setAttribute("class", "miniSiZeNumber");
     pokeLevelInput.setAttribute("id", "level");
     pokeLevelInput.setAttribute("name", "level");
     pokeLevelInput.setAttribute("min", 1);
@@ -321,6 +294,8 @@ function SelectCalcCatchRate() {
     range1.setAttribute("max", 100);
     range1.setAttribute("value", 100);
     range1.setAttribute("list", "markers");
+    range1.setAttribute("onFocus", "onFocusChange();");
+    range1.setAttribute("onBlur", "onBlurChange();");
     childInChildDiv1.appendChild(range1);
     var datalist = document.createElement("datalist");
     datalist.setAttribute("id", "markers");
@@ -380,10 +355,12 @@ function SelectCalcCatchRate() {
     // バッジの数
     var label3 = document.createElement("label");
     label3.textContent = "バッジの数は？";
+    label3.setAttribute("class", "fixedPositionLabels");
     childDiv4.appendChild(label3);
     var selectBadges = document.createElement("select");
     selectBadges.setAttribute("id", "badges");
     selectBadges.setAttribute("name", "badges");
+    selectBadges.setAttribute("class", "pokeSelect");
     childDiv4.appendChild(selectBadges);
     var optionBadges1 = document.createElement("option");
     optionBadges1.text = "0";
@@ -429,10 +406,12 @@ function SelectCalcCatchRate() {
     // 状態異常
     var label4 = document.createElement("label");
     label4.textContent = "状態異常にした？";
+    label4.setAttribute("class", "fixedPositionLabels");
     childDiv5.appendChild(label4);
     var selectDisease = document.createElement("select");
     selectDisease.setAttribute("id", "disease");
     selectDisease.setAttribute("name", "disease");
+    selectDisease.setAttribute("class", "pokeSelect");
     childDiv5.appendChild(selectDisease);
     var optionDisease1 = document.createElement("option");
     optionDisease1.text = "なし";
@@ -459,10 +438,12 @@ function SelectCalcCatchRate() {
     // ほかくパワー
     var label5 = document.createElement("label");
     label5.textContent = "ほかくパワーはある？";
+    label5.setAttribute("class", "fixedPositionLabels");
     childDiv6.appendChild(label5);
     var selectAdditionalEffect = document.createElement("select");
     selectAdditionalEffect.setAttribute("id", "additionalEffect");
     selectAdditionalEffect.setAttribute("name", "additionalEffect");
+    selectAdditionalEffect.setAttribute("class", "pokeSelect");
     childDiv6.appendChild(selectAdditionalEffect);
     var optionAdditionalEffect1 = document.createElement("option");
     optionAdditionalEffect1.text = "なし";
@@ -483,6 +464,7 @@ function SelectCalcCatchRate() {
 
     // 1つ1つの要素を分けるdiv
     var childDiv7 = document.createElement("div");
+    childDiv7.setAttribute("class", "displayFlexArea");
     div3.appendChild(childDiv7);
     // 不意
     var label6 = document.createElement("label");
@@ -492,6 +474,7 @@ function SelectCalcCatchRate() {
     checkboxInput.setAttribute("type", "checkbox");
     checkboxInput.setAttribute("id", "surprise");
     checkboxInput.setAttribute("name", "surprise");
+    checkboxInput.setAttribute("class", "cm-toggle");
     childDiv7.appendChild(checkboxInput);
 
     // 1つ1つの要素を分けるdiv
@@ -500,9 +483,11 @@ function SelectCalcCatchRate() {
     // 捕まえた数
     var label7 = document.createElement("label");
     label7.textContent = "図鑑の捕まえた数は？";
+    label7.setAttribute("class", "fixedPositionLabels");
     childDiv8.appendChild(label7);
     var pokedexInput = document.createElement("input");
     pokedexInput.setAttribute("type", "number");
+    pokedexInput.setAttribute("class", "miniSiZeNumber");
     pokedexInput.setAttribute("id", "pokedex");
     pokedexInput.setAttribute("name", "pokedex");
     pokedexInput.setAttribute("min", 0);
@@ -518,4 +503,19 @@ function SelectCalcCatchRate() {
     calcBtnPokemon.setAttribute("onclick", "calcCatchRate();");
     calcBtnPokemon.textContent = "計算開始";
     selectAndGenCalcCatchRate.appendChild(calcBtnPokemon);
+}
+
+// スライダーにフォーカスされた時にラベルの色も変える
+function onFocusChange() {
+    var ChangedLabels = document.getElementsByClassName("label");
+    for (elementCounterI = 0; elementCounterI < ChangedLabels.length; elementCounterI++) {
+        ChangedLabels[elementCounterI].style.color = "#8ccfe4";
+    }
+}
+
+function onBlurChange() {
+    var ChangedLabels = document.getElementsByClassName("label");
+    for (elementCounterI = 0; elementCounterI < ChangedLabels.length; elementCounterI++) {
+        ChangedLabels[elementCounterI].style.color = "grey";
+    }
 }
