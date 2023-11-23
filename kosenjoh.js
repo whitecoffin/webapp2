@@ -26,10 +26,11 @@ function SelectKosenjoh() {
     selectAndGenKosenjoh.appendChild(p1);
     selectAndGenKosenjoh.appendChild(p2);
 
-    var div = document.createElement("div");
-    div.setAttribute("id", "kosenjohBlock");
-    selectAndGenKosenjoh.appendChild(div);
+    var div1 = document.createElement("div");
+    div1.setAttribute("id", "kosenjohBlock");
+    selectAndGenKosenjoh.appendChild(div1);
 
+    // ボタン系
     var genNewRowBtn = document.createElement("button");
     genNewRowBtn.setAttribute("type", "button");
     genNewRowBtn.setAttribute("class", "blueBtn");
@@ -42,6 +43,11 @@ function SelectKosenjoh() {
     calcBtnKosenjoh.setAttribute("onclick", "CalcAndDisp();");
     calcBtnKosenjoh.textContent = "時速を計算する";
     selectAndGenKosenjoh.appendChild(calcBtnKosenjoh);
+
+    // グラフ描画用
+    var div2 = document.createElement("div");
+    div2.setAttribute("id", "graph");
+    selectAndGenKosenjoh.appendChild(div2);
 
     // ここからは行追加と一緒
     GenerateNewRowKosenjoh();
@@ -68,10 +74,11 @@ function GenerateNewRowKosenjoh() {
     form.appendChild(inputNumber);
     form.appendChild(select);
     // プルダウンリスト用の配列を2つ作成する
+    // 2023/11 グラフ追加時のアプデにより、2つ作る意味は無くなりました…
     // text用(実際に表示される方)
     const optionTextArray = ['EX' , 'EX+' , '90 HELL' , '95 HELL' , '100 HELL' , '150 HELL' , '200 HELL'];
     // value用
-    const optionValueArray = ['ex' , 'explus' , '90' , '95' , '100' , '150' , '200'];
+    const optionValueArray = ['EX' , 'EX+' , '90 HELL' , '95 HELL' , '100 HELL' , '150 HELL' , '200 HELL'];
     // for文でループしながら作成と値の設定、親子セットを行う
     for(i = 0; i < 7; i++) {
         var option = document.createElement("option");
@@ -101,6 +108,10 @@ function CalcAndDisp() {
         swal("計算に失敗しました", "行を追加してください", "error");
         return;
     }
+
+    // グラフ用配列の作成
+    var graphData = [];
+
     // 取得したformの数ぶんループ
     // 計算に失敗した行があればフラグを立てておく
     var alertFlag = false;
@@ -114,6 +125,8 @@ function CalcAndDisp() {
             alertFlag = true;
             continue; // 次のループへ移す
         }
+
+
         // 選択されているレベルを取得する
         var elementSelected = formElements[i].level.value;
         // レベルに応じた貢献度を入れるための変数
@@ -122,25 +135,25 @@ function CalcAndDisp() {
         var resultNumber = 0;
         // 文言によって分岐して貢献度を代入する
         switch(elementSelected) {
-            case 'ex':
+            case 'EX':
                 convertLevelToNumber = 51000;
                 break;
-            case 'explus':
+            case 'EX+':
                 convertLevelToNumber = 88000;
                 break;
-            case '90':
-                convertLevelToNumber = 261592;
+            case '90 HELL':
+                convertLevelToNumber = 260000;
                 break;
-            case '95':
+            case '95 HELL':
                 convertLevelToNumber = 910000;
                 break;
-            case '100':
+            case '100 HELL':
                 convertLevelToNumber = 2680000;
                 break;
-            case '150':
+            case '150 HELL':
                 convertLevelToNumber = 4100000;
                 break;
-            case '200':
+            case '200 HELL':
                 convertLevelToNumber = 13400000;
                 break;
         }
@@ -148,7 +161,12 @@ function CalcAndDisp() {
         resultNumber = 3600 / elementNumber * convertLevelToNumber;
         // 小数点以下で四捨五入した値に単位を付け、input属性のvalueにセットする
         formElements[i].result.value = yenFormat(resultNumber.toFixed(0));
+        // グラフ用配列に値を入れる
+        graphData.push([formElements[i].level.value + ' / ' + formElements[i].number.value + '秒', resultNumber.toFixed(0)]);
     }
+    // グラフの描画
+    displayGraph(graphData);
+
     // もしループ中にフラグが立っていたらアラートを表示する
     if(alertFlag == true) {
         swal("一部行で計算に失敗しました", "数字を入力しているか確認してください", "error");
@@ -169,3 +187,32 @@ function yenFormat(changeValue){
     }
     return '時速：' + resultWord;
   }
+
+// グラフ描画処理
+function displayGraph(graphData){
+    // グラフ描画用divの取得
+    var graph = document.getElementById('graph');
+
+    // 配列の再作成
+    graphArray =[];
+    for(i = 0; i < graphData.length; i++) {
+        graphArray.push({label: graphData[i][0], y: parseInt(graphData[i][1], 10)});
+    }
+
+    var chart = new CanvasJS.Chart(graph, {
+        animationEnabled: true,
+        exportEnabled: true,
+        theme: "light2", // "light1", "light2", "dark1", "dark2"
+        title: {
+            text: "貢献度効率"  //グラフタイトル
+        },
+        axisY: {
+            includeZero: true
+        },
+        data: [{
+            type: 'column',  //グラフの種類
+            dataPoints: graphArray  //表示するデータ
+        }]
+    });
+    chart.render();
+}
